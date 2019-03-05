@@ -4,7 +4,7 @@ Github is a reposotiory of codes that we can share with team mates, recruiters a
 
 ## Downloading software 
 
-Get the Github software from (this link)[https://desktop.github.com/]
+Get the Github software from [this link](https://desktop.github.com/)
 
 NOTE : Make a GitHub account at this point using your email ID associated with this team repo.
 
