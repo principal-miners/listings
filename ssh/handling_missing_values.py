@@ -8,11 +8,10 @@ import pandas
 
 from sklearn.preprocessing import LabelEncoder
 
-from Utils.UtilsViz import *
 from Utils.DataUtils import *
 
 # data_path = Used to save the result file
-data_path = os.path.join("/home/srihari/Projects/DataMining/Project", "Data")
+data_path = os.path.join("C:\\GitHub\\listings\\ssh", "Data")
 
 # ny_datapath = path to listings.csv
 ny_datapath = os.path.join(data_path, "NY")
@@ -51,10 +50,13 @@ def encode_variables(listings):
     # -----------------------------------------------------------------------------------------------------------------#
 
     # host_is_superhost
-    le = LabelEncoder()
-    le.fit(listings['host_is_superhost'].unique())
-    values = le.transform(listings['host_is_superhost'].values)
-    listings['host_is_superhost'] = values
+    # HARDCODE AS 1 AND 0 FOR T AND F RESPECTIVELY
+    # le = LabelEncoder()
+    # le.fit(listings['host_is_superhost'].unique())
+    # values = le.transform(listings['host_is_superhost'].values)
+    # listings['host_is_superhost'] = values
+    di = {"t": 1, "f": 0}
+    listings["host_is_superhost"].replace(di, inplace=True)
 
     # host_has_profile_pic
     le = LabelEncoder()
@@ -83,8 +85,13 @@ def encode_variables(listings):
     # require_guest_phone_verification
     encode(listings, 'require_guest_phone_verification')
 
-    # Incase we also need OHE, uncomment line below
-    # listings = pd.get_dummies(listings)
+    # -----------------------------------------------------------------------------------------------------------------#
+    # Srihari's pipeline
+    # -----------------------------------------------------------------------------------------------------------------#
+
+    cols_to_ohe = ["host_response_time", "neighbourhood_group_cleansed", "property_type",
+                   "room_type", "bed_type", "cancellation_policy"]
+    listings = pd.get_dummies(listings, columns=cols_to_ohe, drop_first=True)
 
     return listings
 
@@ -98,9 +105,10 @@ def handle_missing_values(listings):
     # First drop rows that cant be used
     rows_to_drop = listings[listings['host_listings_count'] != listings['host_total_listings_count']].index
     listings.drop(index=rows_to_drop, axis=0, inplace=True)
+    listings.drop(labels="host_listings_count", axis=1)
 
     # Host response time
-    listings['host_response_time'] = listings['host_response_time'].fillna('null')
+    listings['host_response_time'] = listings['host_response_time'].fillna('na')
 
     # Host response rate
     listings['host_response_rate'] = listings['host_response_rate'].fillna(str(int(get_hrr_fillval(listings))))
@@ -108,9 +116,6 @@ def handle_missing_values(listings):
 
     # host_is_superhost
     listings['host_is_superhost'] = listings['host_is_superhost'].fillna('f')
-
-    # host_listings_count
-    listings.drop(['host_listings_count'], axis=1, inplace=True)
 
     # host_verifications
     listings['host_verifications'] = listings['host_verifications'].apply(lambda x: ast.literal_eval(x))
@@ -142,17 +147,8 @@ def handle_missing_values(listings):
     # beds
     listings['beds'] = listings['beds'].fillna(1.0).astype('float')
 
-    # square_feet
-    listings.drop(['square_feet'], axis=1, inplace=True)
-
     # price
     listings['price'] = listings['price'].str.strip('').str.strip('$').str.replace(',', '').astype('float')
-
-    # weekly_prie
-    listings.drop(['weekly_price'], axis=1, inplace=True)
-
-    # monthly_price
-    listings.drop(['monthly_price'], axis=1, inplace=True)
 
     # security_deposit
     secdrp_fillval = \
@@ -168,9 +164,6 @@ def handle_missing_values(listings):
 
     # extra_people
     listings['extra_people'] = listings['extra_people'].str.strip('$').str.replace(',', '').astype('float')
-
-    # is_business_travel_ready
-    listings.drop(['is_business_travel_ready'], axis=1, inplace=True)
 
     # cancellation_policy
     listings['cancellation_policy'].loc[listings['cancellation_policy'].str.contains('strict')] = 'strict'
@@ -190,10 +183,10 @@ def handle_missing_values(listings):
     for col in review_scores_cols:
         listings[col].fillna(listings[col].median(), inplace=True)
 
-    # city
-    listings["city"].fillna("NYC", inplace=True)
-
     # market
+    # NOTE : In case we want to explore the above dropped features for modeling as well,
+    # uncomment this block of code below -
+    '''
     geo_cols = ["city", "neighbourhood", "neighbourhood_cleansed", "neighbourhood_group_cleansed", "market",
                 "host_neighbourhood"]
 
@@ -210,18 +203,19 @@ def handle_missing_values(listings):
         return row
 
     listings["market"] = listings[["market", "neighbourhood_cleansed"]].apply(impute_market, axis=1)
-
-    # host_location
+    
+    # host_location DELETE
     listings["host_location"].fillna("XX", inplace=True)
 
-    # host_neighbourhood
+    # host_neighbourhood DELETE
     listings["host_neighbourhood"].fillna("XX", inplace=True)
+
+    # zipcode DELETE
+    listings["zipcode"].fillna("XX", inplace=True)
 
     # neighbourhood
     listings["neighbourhood"].fillna(listings["neighbourhood_cleansed"], inplace=True)
-
-    # zipcode
-    listings["zipcode"].fillna("XX", inplace=True)
+    '''
 
     # first_review and last_review
     listings['last_review'] = pd.to_datetime(listings['last_review'])
@@ -233,14 +227,23 @@ def handle_missing_values(listings):
     listings['freview_month'] = listings['first_review'].dt.month
     listings['freview_day'] = listings['first_review'].dt.day
 
+    # Fill the missing values with zeros instead of an unknown category
     listings["first_review"].fillna("XX", inplace=True)
     listings["last_review"].fillna("XX", inplace=True)
-    listings['lreview_year'].fillna("XX", inplace=True)
-    listings['lreview_month'].fillna("XX", inplace=True)
-    listings['lreview_day'].fillna("XX", inplace=True)
-    listings['freview_year'].fillna("XX", inplace=True)
-    listings['freview_month'].fillna("XX", inplace=True)
-    listings['freview_day'].fillna("XX", inplace=True)
+    listings['lreview_year'].fillna(0, inplace=True)
+    listings['lreview_month'].fillna(0, inplace=True)
+    listings['lreview_day'].fillna(0, inplace=True)
+    listings['freview_year'].fillna(0, inplace=True)
+    listings['freview_month'].fillna(0, inplace=True)
+    listings['freview_day'].fillna(0, inplace=True)
+
+    # Get the number of days between reviews
+    listings['ndays_between_f_l_reviews'] = abs(listings['lreview_day'] - listings['freview_day'])
+
+    listings.drop(labels=["last_review", "first_review"], axis=1, inplace=True)
+
+    # Hack, Drop any remaining rows that have nulls
+    listings.dropna(inplace=True)
 
     return listings
 
@@ -264,24 +267,51 @@ def main():
                     'host_thumbnail_url',
                     'host_picture_url',
                     'street',
-                    'license']
-    listings.drop(labels=cols_to_drop, inplace=True, axis=1)
+                    'license',
+                    'state',
+                    'is_business_travel_ready',
+                    'square_feet',
+                    'weekly_price',
+                    'monthly_price',
+                    "city",
+                    "market",
+                    "host_location",
+                    "host_neighbourhood",
+                    "zipcode",
+                    "neighbourhood",
+                    "neighbourhood_cleansed",
+                    "state",
+                    "smart_location",
+                    "country_code",
+                    "country",
+                    "latitude",
+                    "longitude",
+                    "calendar_updated",
+                    "has_availability",
+                    "requires_license",
+                    "calendar_last_scraped"]
+
+    for col in cols_to_drop:
+        if col in listings.columns:
+            listings.drop(labels=col, inplace=True, axis=1)
 
     # Note, there are some columns with user-input data that are not dropped
     # To drop these columns, simply uncomment the next two lines of code.
-    # nlp_cols = ['jurisdiction_names',
-    #              'notes',
-    #              'interaction',
-    #              'access',
-    #              'house_rules',
-    #              'neighborhood_overview',
-    #              'host_about',
-    #              'transit',
-    #              'space',
-    #              'summary',
-    #              'name',
-    #              'description']
-    # listings.drop(labels=nlp_cols, inplace=True, axis=1)
+    nlp_cols = ['jurisdiction_names',
+                 'notes',
+                 'interaction',
+                 'access',
+                 'house_rules',
+                 'neighborhood_overview',
+                 'host_about',
+                 'transit',
+                 'space',
+                 'summary',
+                 'name',
+                 'description']
+    for col in nlp_cols:
+        if col in listings.columns:
+            listings.drop(labels=col, inplace=True, axis=1)
 
     # 1. Handle missing values
     listings = handle_missing_values(listings)
@@ -291,6 +321,7 @@ def main():
 
     # Save the dataframe to disk
     out_path = os.path.join(data_path, "cleaned_listings.csv")
+    print(out_path)
     listings.to_csv(out_path, index=False)
 
 
