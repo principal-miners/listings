@@ -10,16 +10,13 @@ from sklearn.preprocessing import LabelEncoder
 
 from Utils.DataUtils import *
 
-# data_path = Used to save the result file
-data_path = os.path.join("C:\\GitHub\\listings\\ssh", "Data")
-
-# ny_datapath = path to listings.csv
-ny_datapath = os.path.join(data_path, "NY")
+data_path = "C:\\GitHub\\listings\\ssh\\Data\\NY"
+listings_path = os.path.join(data_path, "listings.csv")
 
 
 def null(df, name):
     print('null: ',df[name].isnull().sum())
-    print('null percent: ',df[name].isnull().sum()/len(df))
+    print('null percent: ', df[name].isnull().sum()/len(df))
     print(df[name].value_counts())
     print(df[name].dtype)
 
@@ -271,7 +268,7 @@ def handle_missing_values(listings):
 
 
 def main():
-    listings = pd.read_csv(os.path.join(ny_datapath, "listings.csv"))
+    listings = pd.read_csv(listings_path)
 
     # 0. Drop some columns
     cols_to_drop = ['listing_url',
