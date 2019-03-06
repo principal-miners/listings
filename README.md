@@ -30,3 +30,20 @@ The software we installed <i>GitHub Desktop</i> helps us to do that.
 
 Once github finishes the process, goto the local path you entered and check that folder. All the files, including this README.MD file should be there.
 
+
+## Pulling in the latest code after cloning into the repo
+
+In the parent folder where this Github repo was cloned, using the Github desktop app, <b>Pull</b> the latest changes. It will automatically pull in the latest code changes from the repo into your laptop to keep your code updated. Note : This is a manual step.
+
+## Pushing your changes and codes into this repo
+
+There are 3 steps in this process - 
+1. Choosing files
+2. Commit
+3. Push
+
+STEP 1 --> In the Github desktop app, on the left panel, select all the files that you want to backup in the git server. NOTE : Only send codes and documents. <b>Do NOT SEND csv files, xlsx files etc.>/b>
+STEP 2 --> At the bottom of the left panel <b>Commit</b> your changes. You WILL have to enter a commit message. Put one line on what changes you made for the rest of the team to understand quickly. (Shortcut - ctrl+ENTER for windows)
+STEP 3 --> <b>Push</b> the changes into the Git server. This needs internet connection. The <b>Push</b> button would be on the ribbon. (Shortcut - ctrl+p for windows)
+  
+ Happy coding!    
