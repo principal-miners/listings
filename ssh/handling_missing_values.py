@@ -176,6 +176,15 @@ def handle_missing_values(listings):
     # Srihari's pipeline
     # -----------------------------------------------------------------------------------------------------------------#
 
+    # descrption and host_about
+    listings["description"].fillna("", inplace=True)
+    listings["host_about"].fillna("", inplace=True)
+    listings["description"] = listings["description"].astype(str)
+    listings["host_about"] = listings["host_about"].astype(str)
+
+    listings["desc_len"] = listings["description"].apply(len)
+    listings["host_about_len"] = listings["host_about"].apply(len)
+
     # review_scores
     review_scores_cols = ['review_scores_value', 'review_scores_location', 'review_scores_checkin',
                           'review_scores_cleanliness', 'review_scores_communication', 'review_scores_accuracy',
@@ -254,7 +263,7 @@ def handle_missing_values(listings):
 
     # Hack, Drop any remaining rows that have nulls
     listings.drop(labels=["last_review", "first_review", "calendar_last_scraped", "host_since",
-                          "amenities"], axis=1, inplace=True)
+                          "amenities", "description", "host_about"], axis=1, inplace=True)
 
     listings.dropna(inplace=True)
 
@@ -316,12 +325,10 @@ def main():
                  'access',
                  'house_rules',
                  'neighborhood_overview',
-                 'host_about',
                  'transit',
                  'space',
                  'summary',
-                 'name',
-                 'description']
+                 'name']
     for col in nlp_cols:
         if col in listings.columns:
             listings.drop(labels=col, inplace=True, axis=1)
