@@ -240,7 +240,12 @@ def handle_missing_values(listings):
     # Get the number of days between reviews
     listings['ndays_between_f_l_reviews'] = abs(listings['lreview_day'] - listings['freview_day'])
 
-    listings.drop(labels=["last_review", "first_review"], axis=1, inplace=True)
+    # Get number of days host has been with AirBnb
+    listings['host_since'] = pd.to_datetime(listings['host_since'])
+    listings['calendar_last_scraped'] = pd.to_datetime(listings['calendar_last_scraped'])
+    listings["ndays_host"] = (listings["calendar_last_scraped"] - listings["host_since"]).dt.days
+
+    listings.drop(labels=["last_review", "first_review", "calendar_last_scraped", "host_since"], axis=1, inplace=True)
 
     # Hack, Drop any remaining rows that have nulls
     listings.dropna(inplace=True)
@@ -288,8 +293,8 @@ def main():
                     "longitude",
                     "calendar_updated",
                     "has_availability",
-                    "requires_license",
-                    "calendar_last_scraped"]
+                    "requires_license"
+                    ]
 
     for col in cols_to_drop:
         if col in listings.columns:
