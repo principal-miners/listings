@@ -245,9 +245,17 @@ def handle_missing_values(listings):
     listings['calendar_last_scraped'] = pd.to_datetime(listings['calendar_last_scraped'])
     listings["ndays_host"] = (listings["calendar_last_scraped"] - listings["host_since"]).dt.days
 
-    listings.drop(labels=["last_review", "first_review", "calendar_last_scraped", "host_since"], axis=1, inplace=True)
+    # Amenities
+    def get_num_amenities(row):
+        a = row[1:-1].split(",")
+        return len(a)
+
+    listings["num_amenities"] = listings["amenities"].apply(get_num_amenities)
 
     # Hack, Drop any remaining rows that have nulls
+    listings.drop(labels=["last_review", "first_review", "calendar_last_scraped", "host_since",
+                          "amenities"], axis=1, inplace=True)
+
     listings.dropna(inplace=True)
 
     return listings
