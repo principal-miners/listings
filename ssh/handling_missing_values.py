@@ -10,6 +10,7 @@ from sklearn.preprocessing import LabelEncoder
 
 from Utils.DataUtils import *
 
+# modify data_path to point to the folder where listings.csv is.
 data_path = "C:\\GitHub\\listings\\ssh\\Data\\NY"
 listings_path = os.path.join(data_path, "listings.csv")
 
@@ -334,7 +335,7 @@ def main():
     listings = handle_missing_values(listings)
 
     # 2. Encode variables
-    listings = encode_variables(listings)
+    # listings = encode_variables(listings)
 
     # Save the dataframe to disk
     out_path = os.path.join(data_path, "cleaned_listings.csv")

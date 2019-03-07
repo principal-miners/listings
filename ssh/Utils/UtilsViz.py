@@ -199,17 +199,18 @@ def plot_bubblehist(x, y, s, data, show_max_min=True, title="", xlabel="", ylabe
 
 
     
-def plot_dist(data, colname, xlabel="", ylabel="", title="", legend=True):
-    f, (ax_box, ax_hist) = plt.subplots(2, sharex=True, gridspec_kw={"height_ratios": (.15, .85)})
+def plot_dist(data, colname, xlabel="", ylabel="", title="", kde=True, hist=True, legend=True, figsize=(10,10)):
+    f, (ax_box, ax_hist) = plt.subplots(2, figsize=figsize, sharex=False, gridspec_kw={"height_ratios": (.15, .85)})
  
     # Add a graph in each part
     gbox = sns.boxplot(data[colname], ax=ax_box)
-    ghist = sns.distplot(data[colname], ax=ax_hist)
+    ghist = sns.distplot(data[colname], ax=ax_hist, kde=kde, hist=hist)
 
     # Remove x axis name for the boxplot
     ax_box.set(xlabel='')
 
-    ghist.set(xlabel=xlabel, ylabel=ylabel, title=title)
+    ghist.set(xlabel=xlabel, ylabel=ylabel)
+    gbox.set(title=title)
     if legend:
         ax_hist.legend(handles=ax_hist.lines[::len(data) + 1], labels=[colname])
 
