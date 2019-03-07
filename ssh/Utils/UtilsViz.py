@@ -8,6 +8,8 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import textwrap
+
 
 from matplotlib.ticker import PercentFormatter
 
@@ -129,6 +131,37 @@ def plot_bar_timegraph(x, y, data, ax, highlight_max_min=False,
     ax.legend(handles=ax.lines[::len(data) + 1], labels=[y, y + " % change"])
 
 
+def plot_box(x, y, data, agg_rule, ax, point_plot=True, annot=False,
+                       title="", xlabel="", ylabel="", ylim=None):
+    # Get the median value at each year
+    agg_data = data[[y, x]].groupby(by=[x], as_index=False).agg(agg_rule)
+    g = sns.boxplot(x=x, y=y, data=data[[y, x]], ax=ax)
+    if point_plot:
+        
+        if "object" in str(agg_data[x].dtype):
+            xtl = list(g.get_xticklabels())
+            sorter = [textwrap.fill(t.get_text(), 10)  for t in xtl]
+
+            sorterIndex = dict(zip(sorter,range(len(sorter))))
+            agg_data[x] = agg_data[x].map(sorterIndex)
+
+        g = sns.pointplot(x=x, y=y, data=agg_data, ax=ax, color="k")
+    if annot:
+        # Add labels to the plot
+        style = dict(size=12, color='darkblue')
+        s1 = np.round(agg_data[y].values, 2)
+        for idx, row in agg_data.iterrows():
+            rx, ry = row[x], row[y]
+            ax.text(idx, ry, str(s1[idx]), **style, va="bottom", ha='center')
+
+    g.set(xlabel=xlabel, ylabel=ylabel, title=title)
+    if ylim is not None:
+        ax.set_ylim([0, ylim])
+    else:
+        ax.set_ylim([0, data[y].max() * 1.2])
+    ax.legend(handles=ax.lines[::len(data)], labels=[y + " " + agg_rule])
+    
+    
 def plot_box_timegraph(x, y, data, agg_rule, ax, point_plot=True, annot=False,
                        title="", xlabel="", ylabel="", ylim=None):
     # Get the median value at each year
