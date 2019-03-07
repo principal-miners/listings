@@ -49,39 +49,26 @@ def encode_variables(listings):
 
     # host_is_superhost
     # HARDCODE AS 1 AND 0 FOR T AND F RESPECTIVELY
-    # le = LabelEncoder()
-    # le.fit(listings['host_is_superhost'].unique())
-    # values = le.transform(listings['host_is_superhost'].values)
-    # listings['host_is_superhost'] = values
     di = {"t": 1, "f": 0}
     listings["host_is_superhost"].replace(di, inplace=True)
 
     # host_has_profile_pic
-    le = LabelEncoder()
-    le.fit(listings['host_has_profile_pic'].unique())
-    values = le.transform(listings['host_has_profile_pic'].values)
-    listings['host_has_profile_pic'] = values
+    listings["host_has_profile_pic"].replace(di, inplace=True)
 
     # host_identity_verified
-    le = LabelEncoder()
-    le.fit(listings['host_identity_verified'].unique())
-    values = le.transform(listings['host_identity_verified'].values)
-    listings['host_identity_verified'] = values
+    listings["host_identity_verified"].replace(di, inplace=True)
 
     # is_location_exact
-    le = LabelEncoder()
-    le.fit(listings['is_location_exact'].unique())
-    values = le.transform(listings['is_location_exact'].values)
-    listings['is_location_exact'] = values
+    listings["is_location_exact"].replace(di, inplace=True)
 
     # instant_bookable
-    encode(listings, 'instant_bookable')
+    listings["instant_bookable"].replace(di, inplace=True)
 
     # require_guest_profile_picture
-    encode(listings, 'require_guest_profile_picture')
+    listings["require_guest_profile_picture"].replace(di, inplace=True)
 
     # require_guest_phone_verification
-    encode(listings, 'require_guest_phone_verification')
+    listings["require_guest_phone_verification"].replace(di, inplace=True)
 
     # -----------------------------------------------------------------------------------------------------------------#
     # Srihari's pipeline
@@ -190,7 +177,6 @@ def handle_missing_values(listings):
     for col in review_scores_cols:
         listings[col].fillna(listings[col].median(), inplace=True)
 
-    # market
     # NOTE : In case we want to explore the above dropped features for modeling as well,
     # uncomment this block of code below -
     '''
@@ -210,15 +196,6 @@ def handle_missing_values(listings):
         return row
 
     listings["market"] = listings[["market", "neighbourhood_cleansed"]].apply(impute_market, axis=1)
-    
-    # host_location DELETE
-    listings["host_location"].fillna("XX", inplace=True)
-
-    # host_neighbourhood DELETE
-    listings["host_neighbourhood"].fillna("XX", inplace=True)
-
-    # zipcode DELETE
-    listings["zipcode"].fillna("XX", inplace=True)
 
     # neighbourhood
     listings["neighbourhood"].fillna(listings["neighbourhood_cleansed"], inplace=True)
@@ -235,8 +212,6 @@ def handle_missing_values(listings):
     listings['freview_day'] = listings['first_review'].dt.day
 
     # Fill the missing values with zeros instead of an unknown category
-    listings["first_review"].fillna("XX", inplace=True)
-    listings["last_review"].fillna("XX", inplace=True)
     listings['lreview_year'].fillna(0, inplace=True)
     listings['lreview_month'].fillna(0, inplace=True)
     listings['lreview_day'].fillna(0, inplace=True)

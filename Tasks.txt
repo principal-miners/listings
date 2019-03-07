@@ -1,8 +1,4 @@
-Upload all files into 1Drive
-
 Price vs amenities 
-Price vs num_amenities DONE
-Encoding -- Hardcode most of the encodings
 
 Get EDA done by 12 PM tonight
 
@@ -16,11 +12,9 @@ EDA - neighbourhood_group vs price
 
 Unsupervised clustering
 
-
 NLP
 
 Get distributions for the clusters
-
 
 Should we use the same models for NLP 
 
