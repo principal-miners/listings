@@ -212,6 +212,8 @@ def handle_missing_values(listings):
     listings['freview_day'] = listings['first_review'].dt.day
 
     # Fill the missing values with zeros instead of an unknown category
+    # listings["first_review"].fillna("XX", inplace=True)
+    # listings["last_review"].fillna("XX", inplace=True)
     listings['lreview_year'].fillna(0, inplace=True)
     listings['lreview_month'].fillna(0, inplace=True)
     listings['lreview_day'].fillna(0, inplace=True)
@@ -226,6 +228,8 @@ def handle_missing_values(listings):
     listings['host_since'] = pd.to_datetime(listings['host_since'])
     listings['calendar_last_scraped'] = pd.to_datetime(listings['calendar_last_scraped'])
     listings["ndays_host"] = (listings["calendar_last_scraped"] - listings["host_since"]).dt.days
+
+    listings["ndays_last_review"] = (listings["calendar_last_scraped"] - listings["last_review"]).dt.days
 
     # Amenities
     def get_num_amenities(row):
