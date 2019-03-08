@@ -1,7 +1,5 @@
 Price vs amenities - ToDo
 
-Get EDA done by 12 PM tonight
-
 Use NY data to train model and test on other models?
 
 Get variable importances
@@ -20,6 +18,5 @@ Should we use the same models for NLP
 
 Feature engineering
 
-	1. days since last review
-	2. multiplying distributions
+	1. multiplying distributions
 	
