@@ -11,7 +11,7 @@ from sklearn.preprocessing import LabelEncoder
 from Utils.DataUtils import *
 
 # modify data_path to point to the folder where listings.csv is.
-data_path = "C:\\GitHub\\listings\\ssh\\Data\\NY"
+data_path = "C:\\Users\\sriharis\\OneDrive\\UChicago\\DataMining\\project\\NYData"
 listings_path = os.path.join(data_path, "listings.csv")
 kmeans_topcs_path = os.path.join(data_path, "kmeans_topics.csv")
 
@@ -325,7 +325,7 @@ def main():
         combined_table.drop(labels=["listing_id"], axis=1, inplace=True)
 
     # Save the dataframe to disk
-    out_path = os.path.join(data_path, "cleaned_with_nlp_listings_2.csv")
+    out_path = os.path.join(data_path, "cleaned_with_nlp_listings.csv")
     print(out_path)
     combined_table.to_csv(out_path, index=False)
 
