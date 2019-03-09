@@ -14,6 +14,16 @@ import textwrap
 from matplotlib.ticker import PercentFormatter
 
 
+def plot_nans(df):
+    nan_df = analyse_nans(df)
+    nan_df_transpose = nan_df.T
+    nan_df_transpose.sort_values(by="percentage", ascending=False, axis=0, inplace=True)
+    f, ax = plt.subplots(1,1, figsize=(30,5))
+    plot_bar(data=nan_df_transpose, x=nan_df_transpose.index, y="percentage", 
+             ax=ax, annot=True, highlight_max_min=False,
+             xlabel="Column", ylabel="Percentage", title="Percentage of NaNs in each column",
+            xrot=90)
+
 def plot_naive_variance(pca, ax):
     '''
     Plots the variance explained by each of the principal components.
