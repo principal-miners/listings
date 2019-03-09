@@ -13,6 +13,7 @@ from Utils.DataUtils import *
 # modify data_path to point to the folder where listings.csv is.
 data_path = "C:\\GitHub\\listings\\ssh\\Data\\NY"
 listings_path = os.path.join(data_path, "listings.csv")
+kmeans_topcs_path = os.path.join(data_path, "kmeans_topics.csv")
 
 
 def null(df, name):
@@ -249,6 +250,7 @@ def handle_missing_values(listings):
 
 def main():
     listings = pd.read_csv(listings_path)
+    kmeans_topics = pd.read_csv(kmeans_topcs_path)
 
     # 0. Drop some columns
     cols_to_drop = ['listing_url',
@@ -314,12 +316,18 @@ def main():
     listings = handle_missing_values(listings)
 
     # 2. Encode variables
-    # listings = encode_variables(listings)
+    listings = encode_variables(listings)
+
+    # 3. Join the KMeans topics file
+    combined_table = pd.merge(left=listings, right=kmeans_topics,
+                              left_on="id", right_on="listing_id", how="right")
+    if "listing_id" in combined_table.columns:
+        combined_table.drop(labels=["listing_id"], axis=1, inplace=True)
 
     # Save the dataframe to disk
-    out_path = os.path.join(data_path, "cleaned_listings.csv")
+    out_path = os.path.join(data_path, "cleaned_with_nlp_listings_2.csv")
     print(out_path)
-    listings.to_csv(out_path, index=False)
+    combined_table.to_csv(out_path, index=False)
 
 
 if __name__ == "__main__":

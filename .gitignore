@@ -1,2 +1,8 @@
 
 *.csv
+*.xml
+*.iml
+*.pyc
+*.pyc
+*.pyc
+ssh/Utils/__pycache__/UtilsViz.cpython-37.pyc
