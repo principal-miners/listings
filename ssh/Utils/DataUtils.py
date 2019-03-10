@@ -8,6 +8,7 @@
 import pandas as pd
 import numpy as np
 import math
+import matplotlib.pyplot as plt
 
 
 def num_nan_rows(df):
@@ -53,8 +54,8 @@ def analyse_nans(df):
         temp_df[col] = [num_nans, nan_pct,
                         df.index[idxes.values == True].tolist()]
     return temp_df
-
-
+    
+    
 def describe_unique(df, colname, filter_unnecessary=True):
     """
     Describes all the unique elements in a column

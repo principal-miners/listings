@@ -10,8 +10,10 @@ from sklearn.preprocessing import LabelEncoder
 
 from Utils.DataUtils import *
 
-data_path = "C:\\GitHub\\listings\\ssh\\Data\\NY"
+# modify data_path to point to the folder where listings.csv is.
+data_path = "C:\\Users\\sriharis\\OneDrive\\UChicago\\DataMining\\project\\NYData"
 listings_path = os.path.join(data_path, "listings.csv")
+kmeans_topcs_path = os.path.join(data_path, "kmeans_topics.csv")
 
 
 def null(df, name):
@@ -48,39 +50,26 @@ def encode_variables(listings):
 
     # host_is_superhost
     # HARDCODE AS 1 AND 0 FOR T AND F RESPECTIVELY
-    # le = LabelEncoder()
-    # le.fit(listings['host_is_superhost'].unique())
-    # values = le.transform(listings['host_is_superhost'].values)
-    # listings['host_is_superhost'] = values
     di = {"t": 1, "f": 0}
     listings["host_is_superhost"].replace(di, inplace=True)
 
     # host_has_profile_pic
-    le = LabelEncoder()
-    le.fit(listings['host_has_profile_pic'].unique())
-    values = le.transform(listings['host_has_profile_pic'].values)
-    listings['host_has_profile_pic'] = values
+    listings["host_has_profile_pic"].replace(di, inplace=True)
 
     # host_identity_verified
-    le = LabelEncoder()
-    le.fit(listings['host_identity_verified'].unique())
-    values = le.transform(listings['host_identity_verified'].values)
-    listings['host_identity_verified'] = values
+    listings["host_identity_verified"].replace(di, inplace=True)
 
     # is_location_exact
-    le = LabelEncoder()
-    le.fit(listings['is_location_exact'].unique())
-    values = le.transform(listings['is_location_exact'].values)
-    listings['is_location_exact'] = values
+    listings["is_location_exact"].replace(di, inplace=True)
 
     # instant_bookable
-    encode(listings, 'instant_bookable')
+    listings["instant_bookable"].replace(di, inplace=True)
 
     # require_guest_profile_picture
-    encode(listings, 'require_guest_profile_picture')
+    listings["require_guest_profile_picture"].replace(di, inplace=True)
 
     # require_guest_phone_verification
-    encode(listings, 'require_guest_phone_verification')
+    listings["require_guest_phone_verification"].replace(di, inplace=True)
 
     # -----------------------------------------------------------------------------------------------------------------#
     # Srihari's pipeline
@@ -189,7 +178,6 @@ def handle_missing_values(listings):
     for col in review_scores_cols:
         listings[col].fillna(listings[col].median(), inplace=True)
 
-    # market
     # NOTE : In case we want to explore the above dropped features for modeling as well,
     # uncomment this block of code below -
     '''
@@ -209,15 +197,6 @@ def handle_missing_values(listings):
         return row
 
     listings["market"] = listings[["market", "neighbourhood_cleansed"]].apply(impute_market, axis=1)
-    
-    # host_location DELETE
-    listings["host_location"].fillna("XX", inplace=True)
-
-    # host_neighbourhood DELETE
-    listings["host_neighbourhood"].fillna("XX", inplace=True)
-
-    # zipcode DELETE
-    listings["zipcode"].fillna("XX", inplace=True)
 
     # neighbourhood
     listings["neighbourhood"].fillna(listings["neighbourhood_cleansed"], inplace=True)
@@ -234,8 +213,8 @@ def handle_missing_values(listings):
     listings['freview_day'] = listings['first_review'].dt.day
 
     # Fill the missing values with zeros instead of an unknown category
-    listings["first_review"].fillna("XX", inplace=True)
-    listings["last_review"].fillna("XX", inplace=True)
+    # listings["first_review"].fillna("XX", inplace=True)
+    # listings["last_review"].fillna("XX", inplace=True)
     listings['lreview_year'].fillna(0, inplace=True)
     listings['lreview_month'].fillna(0, inplace=True)
     listings['lreview_day'].fillna(0, inplace=True)
@@ -250,6 +229,8 @@ def handle_missing_values(listings):
     listings['host_since'] = pd.to_datetime(listings['host_since'])
     listings['calendar_last_scraped'] = pd.to_datetime(listings['calendar_last_scraped'])
     listings["ndays_host"] = (listings["calendar_last_scraped"] - listings["host_since"]).dt.days
+
+    listings["ndays_last_review"] = (listings["calendar_last_scraped"] - listings["last_review"]).dt.days
 
     # Amenities
     def get_num_amenities(row):
@@ -269,6 +250,7 @@ def handle_missing_values(listings):
 
 def main():
     listings = pd.read_csv(listings_path)
+    kmeans_topics = pd.read_csv(kmeans_topcs_path)
 
     # 0. Drop some columns
     cols_to_drop = ['listing_url',
@@ -336,10 +318,16 @@ def main():
     # 2. Encode variables
     listings = encode_variables(listings)
 
+    # 3. Join the KMeans topics file
+    combined_table = pd.merge(left=listings, right=kmeans_topics,
+                              left_on="id", right_on="listing_id", how="right")
+    if "listing_id" in combined_table.columns:
+        combined_table.drop(labels=["listing_id"], axis=1, inplace=True)
+
     # Save the dataframe to disk
-    out_path = os.path.join(data_path, "cleaned_listings.csv")
+    out_path = os.path.join(data_path, "cleaned_with_nlp_listings.csv")
     print(out_path)
-    listings.to_csv(out_path, index=False)
+    combined_table.to_csv(out_path, index=False)
 
 
 if __name__ == "__main__":

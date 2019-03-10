@@ -1,0 +1,22 @@
+Price vs amenities - ToDo
+
+Use NY data to train model and test on other models?
+
+Get variable importances
+
+Transformations for varaibles based on EDA
+
+EDA - neighbourhood_group vs price
+
+Unsupervised clustering
+
+NLP
+
+Get distributions for the clusters
+
+Should we use the same models for NLP 
+
+Feature engineering
+
+	1. multiplying distributions
+	
