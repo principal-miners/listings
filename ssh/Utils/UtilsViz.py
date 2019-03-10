@@ -251,6 +251,7 @@ def plot_dist(data, colname, xlabel="", ylabel="", title="", kde=True, hist=True
 
 def plot_bar(data, x, y, ax, title="", xlabel="", ylabel="",
              xrot=0, yrot=0, highlight_max_min=True,
+             plot_percentiles=[], plot_mean=True,
              point_plot=False, annot=True, legend=False):    
     if highlight_max_min:
         clrs = []
@@ -265,6 +266,16 @@ def plot_bar(data, x, y, ax, title="", xlabel="", ylabel="",
         g = sns.barplot(x=x, y=y, data=data, ax=ax, palette=clrs)
     else:
         g = sns.barplot(x=x, y=y, data=data, ax=ax)
+        
+    if len(plot_percentiles) > 0:
+        for p in plot_percentiles:
+            v = np.percentile(data[y].values, p)
+            plt.axhline(v, 1, 0, color='grey').set_linestyle("--")
+            
+    if plot_mean:
+        v = data[y].mean()
+        plt.axhline(v, 1, 0, color='k').set_linestyle("--")
+        
     if point_plot:
         g1 = sns.pointplot(x=x, y=y, data=data, ax=ax, color="darkblue")
     if xrot != 0:
