@@ -50,11 +50,11 @@ def plot_pca_var_cum(pca, ax, cutoff=0.95):
     A matplotlib.Axes instance.
     '''
     cum_var = np.cumsum(pca.explained_variance_ratio_)
-    sns.lineplot(x=range(len(cum_var)),  y=cum_var, c='red', ax=ax)
-    plt.axhline(cutoff, 1, 0)
+    sns.lineplot(x=range(len(cum_var)),  y=cum_var, c='lightblue', ax=ax)
+    plt.axhline(cutoff, 1, 0, color='k').set_linestyle("--")
     tmp = list(abs(cum_var-cutoff))
     cx = tmp.index(min(tmp))+1
-    plt.axvline(cx, cutoff, 0)
+    plt.axvline(cx, cutoff, 0, color='k').set_linestyle("--")
     ax.set_title("Cumulative Explained Variance")
     ax.set_xlabel("Dimension #")
     ax.set_ylabel("Cumulative Explained Variance Ratio")
@@ -249,7 +249,7 @@ def plot_dist(data, colname, xlabel="", ylabel="", title="", kde=True, hist=True
 
     
 
-def plot_bar(data, x, y, ax, title="", xlabel="", ylabel="",
+def plot_bar(data, x, y, ax, hue=None, title="", xlabel="", ylabel="",
              xrot=0, yrot=0, highlight_max_min=True,
              plot_percentiles=[], plot_mean=True,
              point_plot=False, annot=True, legend=False):    
@@ -265,7 +265,7 @@ def plot_bar(data, x, y, ax, title="", xlabel="", ylabel="",
                 clrs.append('lightgreen')
         g = sns.barplot(x=x, y=y, data=data, ax=ax, palette=clrs)
     else:
-        g = sns.barplot(x=x, y=y, data=data, ax=ax)
+        g = sns.barplot(x=x, y=y, data=data, ax=ax, hue=hue)
         
     if len(plot_percentiles) > 0:
         for p in plot_percentiles:
