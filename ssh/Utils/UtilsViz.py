@@ -165,7 +165,7 @@ def plot_violin(x, y, data, agg_rule, ax, point_plot=True, annot=False,
                        title="", xlabel="", ylabel="", ylim=None):
     # Get the median value at each year
     agg_data = data[[y, x]].groupby(by=[x], as_index=False).agg(agg_rule)
-    g = sns.violinplot(x=x, y=y, data=data[[y, x]], ax=ax)
+    g = sns.violinplot(x=x, y=y, data=data[[y, x]], ax=ax, inner="quartile")
     if point_plot:
         
         if "object" in str(agg_data[x].dtype):
