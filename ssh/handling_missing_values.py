@@ -16,7 +16,7 @@ data_path = "C:\\GitHub\\listings\\data"
 listings_path = os.path.join(data_path, "listings.csv")
 kmeans_topcs_path = os.path.join(data_path, "kmeans_topics.csv")
 
-PERCENTILE_CROP = [0, 98]
+PERCENTILE_CROP = [1, 98]
 
 
 def null(df, name):
