@@ -231,7 +231,8 @@ def handle_missing_values(listings):
     listings['calendar_last_scraped'] = pd.to_datetime(listings['calendar_last_scraped'])
     listings["ndays_host"] = (listings["calendar_last_scraped"] - listings["host_since"]).dt.days
 
-    # listings["ndays_last_review"] = (listings["calendar_last_scraped"] - listings["last_review"]).dt.days
+    listings["ndays_last_review"] = (listings["calendar_last_scraped"] - listings["last_review"]).dt.days
+    listings['ndays_last_review'].fillna(999999, inplace=True)
 
     # Amenities
     def get_num_amenities(row):
@@ -325,7 +326,7 @@ def main():
     print(out_path)
     listings.to_csv(out_path, index=False)
     print(listings.shape)
-    exit(12)
+    # exit(12)
 
     # 3. Join the KMeans topics file
     kmeans_topics = pd.read_csv(kmeans_topcs_path)
