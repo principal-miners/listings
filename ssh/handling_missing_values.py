@@ -16,6 +16,8 @@ data_path = "C:\\GitHub\\listings\\data"
 listings_path = os.path.join(data_path, "listings.csv")
 kmeans_topcs_path = os.path.join(data_path, "kmeans_topics.csv")
 
+PERCENTILE_CROP = [0, 98]
+
 
 def null(df, name):
     print('null: ',df[name].isnull().sum())
@@ -83,6 +85,30 @@ def encode_variables(listings):
     return listings
 
 
+def remove_outliers(listings):
+    percentiles = list(range(0, 101, 1))
+    price_percentile = {}
+    for p in percentiles:
+        price_percentile[p] = np.percentile(listings['price'].values, p)
+
+    price_percentile = pd.DataFrame.from_dict(price_percentile, orient='index')
+
+    listings = listings[listings["price"] <= price_percentile.iloc[PERCENTILE_CROP[1], :].values[0]]
+    listings = listings[listings["price"] >= price_percentile.iloc[PERCENTILE_CROP[0], :].values[0]]
+
+    return listings
+
+
+def round_price(listings):
+    base = 5
+
+    def roundto(row):
+        return int(base * round(float(row) / base))
+    listings["price"] = listings["price"].apply(roundto)
+
+    return listings
+
+
 def handle_missing_values(listings):
 
     # -----------------------------------------------------------------------------------------------------------------#
@@ -136,6 +162,8 @@ def handle_missing_values(listings):
 
     # price
     listings['price'] = listings['price'].str.strip('').str.strip('$').str.replace(',', '').astype('float')
+    # Round the price column to multiple of nearest 5$
+    round_price(listings)
 
     # security_deposit
     secdrp_fillval = \
@@ -178,30 +206,6 @@ def handle_missing_values(listings):
                           'review_scores_rating']
     for col in review_scores_cols:
         listings[col].fillna(listings[col].median(), inplace=True)
-
-    # NOTE : In case we want to explore the above dropped features for modeling as well,
-    # uncomment this block of code below -
-    '''
-    geo_cols = ["city", "neighbourhood", "neighbourhood_cleansed", "neighbourhood_group_cleansed", "market",
-                "host_neighbourhood"]
-
-    no_geonan_listings = listings[geo_cols].dropna()
-    map_nbc_market = {}
-    for nbc in no_geonan_listings["neighbourhood_cleansed"].unique():
-        map_nbc_market[nbc] = listings[listings["neighbourhood_cleansed"] == nbc]["market"].unique()
-
-    def impute_market(row):
-        if type(row["market"]) != type("a"):
-            nb_cleansed = row["neighbourhood_cleansed"]
-            val = map_nbc_market[nb_cleansed][0]
-            return val
-        return row
-
-    listings["market"] = listings[["market", "neighbourhood_cleansed"]].apply(impute_market, axis=1)
-
-    # neighbourhood
-    listings["neighbourhood"].fillna(listings["neighbourhood_cleansed"], inplace=True)
-    '''
 
     # first_review and last_review
     listings['last_review'] = pd.to_datetime(listings['last_review'])
@@ -315,17 +319,21 @@ def main():
 
     # 1. Handle missing values
     listings = handle_missing_values(listings)
-    print(listings.shape)
+    print("1", listings.shape)
+
+    # 2. Remove outliers
+    listings = remove_outliers(listings)
+    print("2", listings.shape)
 
     # 2. Encode variables
     listings = encode_variables(listings)
-    print(listings.shape)
+    print("3", listings.shape)
 
     # Save the dataframe to disk
     out_path = os.path.join(data_path, "cleaned_listings.csv")
     print(out_path)
     listings.to_csv(out_path, index=False)
-    print(listings.shape)
+    print("4", listings.shape)
     # exit(12)
 
     # 3. Join the KMeans topics file
