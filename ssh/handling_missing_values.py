@@ -11,7 +11,8 @@ from sklearn.preprocessing import LabelEncoder
 from Utils.DataUtils import *
 
 # modify data_path to point to the folder where listings.csv is.
-data_path = "C:\\Users\\sriharis\\OneDrive\\UChicago\\DataMining\\project\\NYData"
+# data_path = "C:\\Users\\sriharis\\OneDrive\\UChicago\\DataMining\\project\\NYData"
+data_path = "C:\\GitHub\\listings\\data"
 listings_path = os.path.join(data_path, "listings.csv")
 kmeans_topcs_path = os.path.join(data_path, "kmeans_topics.csv")
 
@@ -230,7 +231,7 @@ def handle_missing_values(listings):
     listings['calendar_last_scraped'] = pd.to_datetime(listings['calendar_last_scraped'])
     listings["ndays_host"] = (listings["calendar_last_scraped"] - listings["host_since"]).dt.days
 
-    listings["ndays_last_review"] = (listings["calendar_last_scraped"] - listings["last_review"]).dt.days
+    # listings["ndays_last_review"] = (listings["calendar_last_scraped"] - listings["last_review"]).dt.days
 
     # Amenities
     def get_num_amenities(row):
@@ -250,7 +251,6 @@ def handle_missing_values(listings):
 
 def main():
     listings = pd.read_csv(listings_path)
-    kmeans_topics = pd.read_csv(kmeans_topcs_path)
 
     # 0. Drop some columns
     cols_to_drop = ['listing_url',
@@ -314,11 +314,21 @@ def main():
 
     # 1. Handle missing values
     listings = handle_missing_values(listings)
+    print(listings.shape)
 
     # 2. Encode variables
     listings = encode_variables(listings)
+    print(listings.shape)
+
+    # Save the dataframe to disk
+    out_path = os.path.join(data_path, "cleaned_listings.csv")
+    print(out_path)
+    listings.to_csv(out_path, index=False)
+    print(listings.shape)
+    exit(12)
 
     # 3. Join the KMeans topics file
+    kmeans_topics = pd.read_csv(kmeans_topcs_path)
     combined_table = pd.merge(left=listings, right=kmeans_topics,
                               left_on="id", right_on="listing_id", how="right")
     if "listing_id" in combined_table.columns:
