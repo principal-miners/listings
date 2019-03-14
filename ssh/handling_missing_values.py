@@ -346,10 +346,9 @@ def main():
 
     # X. Remove correlated columns
     listings = remove_corr_cols(listings)
-    print("4", listings.shape)
 
     # Save the dataframe to disk
-    out_path = os.path.join(data_path, "cleaned_listings.csv")
+    out_path = os.path.join(data_path, "cleaned_listings_with_outliers.csv")
     print(out_path)
     listings.to_csv(out_path, index=False)
     print("4", listings.shape)
