@@ -11,9 +11,12 @@ from sklearn.preprocessing import LabelEncoder
 from Utils.DataUtils import *
 
 # modify data_path to point to the folder where listings.csv is.
-data_path = "C:\\Users\\sriharis\\OneDrive\\UChicago\\DataMining\\project\\NYData"
+# data_path = "C:\\Users\\SSrih\\OneDrive\\UChicago\\DataMining\\project\\NYData"
+data_path = "C:\\GitHub\\listings\\data"
 listings_path = os.path.join(data_path, "listings.csv")
 kmeans_topcs_path = os.path.join(data_path, "kmeans_topics.csv")
+
+PERCENTILE_CROP = [1, 98]
 
 
 def null(df, name):
@@ -82,6 +85,30 @@ def encode_variables(listings):
     return listings
 
 
+def remove_outliers(listings):
+    percentiles = list(range(0, 101, 1))
+    price_percentile = {}
+    for p in percentiles:
+        price_percentile[p] = np.percentile(listings['price'].values, p)
+
+    price_percentile = pd.DataFrame.from_dict(price_percentile, orient='index')
+
+    listings = listings[listings["price"] <= price_percentile.iloc[PERCENTILE_CROP[1], :].values[0]]
+    listings = listings[listings["price"] >= price_percentile.iloc[PERCENTILE_CROP[0], :].values[0]]
+
+    return listings
+
+
+def round_price(listings):
+    base = 5
+
+    def roundto(row):
+        return int(base * round(float(row) / base))
+    listings["price"] = listings["price"].apply(roundto)
+
+    return listings
+
+
 def handle_missing_values(listings):
 
     # -----------------------------------------------------------------------------------------------------------------#
@@ -135,6 +162,8 @@ def handle_missing_values(listings):
 
     # price
     listings['price'] = listings['price'].str.strip('').str.strip('$').str.replace(',', '').astype('float')
+    # Round the price column to multiple of nearest 5$
+    round_price(listings)
 
     # security_deposit
     secdrp_fillval = \
@@ -178,30 +207,6 @@ def handle_missing_values(listings):
     for col in review_scores_cols:
         listings[col].fillna(listings[col].median(), inplace=True)
 
-    # NOTE : In case we want to explore the above dropped features for modeling as well,
-    # uncomment this block of code below -
-    '''
-    geo_cols = ["city", "neighbourhood", "neighbourhood_cleansed", "neighbourhood_group_cleansed", "market",
-                "host_neighbourhood"]
-
-    no_geonan_listings = listings[geo_cols].dropna()
-    map_nbc_market = {}
-    for nbc in no_geonan_listings["neighbourhood_cleansed"].unique():
-        map_nbc_market[nbc] = listings[listings["neighbourhood_cleansed"] == nbc]["market"].unique()
-
-    def impute_market(row):
-        if type(row["market"]) != type("a"):
-            nb_cleansed = row["neighbourhood_cleansed"]
-            val = map_nbc_market[nb_cleansed][0]
-            return val
-        return row
-
-    listings["market"] = listings[["market", "neighbourhood_cleansed"]].apply(impute_market, axis=1)
-
-    # neighbourhood
-    listings["neighbourhood"].fillna(listings["neighbourhood_cleansed"], inplace=True)
-    '''
-
     # first_review and last_review
     listings['last_review'] = pd.to_datetime(listings['last_review'])
     listings['lreview_year'] = listings['last_review'].dt.year
@@ -231,6 +236,7 @@ def handle_missing_values(listings):
     listings["ndays_host"] = (listings["calendar_last_scraped"] - listings["host_since"]).dt.days
 
     listings["ndays_last_review"] = (listings["calendar_last_scraped"] - listings["last_review"]).dt.days
+    listings['ndays_last_review'].fillna(999999, inplace=True)
 
     # Amenities
     def get_num_amenities(row):
@@ -248,9 +254,23 @@ def handle_missing_values(listings):
     return listings
 
 
+def remove_corr_cols(listings):
+    cols_to_drop = ["host_total_listings_count",
+                    "minimum_minimum_nights", "minimum_maximum_nights", "maximum_maximum_nights",
+                    "maximum_nights_avg_ntm", "availability_60", "availability_90", "availability_365",
+                    "calculated_host_listings_count_entire_homes", "calculated_host_listings_count_private_rooms",
+                    "calculated_host_listings_count_shared_rooms", "freview_year",
+                    "maximum_minimum_nights", "minimum_nights_avg_ntm", "number_of_reviews_ltm"]
+
+    for col in cols_to_drop:
+        if col in listings.columns:
+            listings.drop(labels=col, inplace=True, axis=1)
+
+    return listings
+
+
 def main():
     listings = pd.read_csv(listings_path)
-    kmeans_topics = pd.read_csv(kmeans_topcs_path)
 
     # 0. Drop some columns
     cols_to_drop = ['listing_url',
@@ -314,11 +334,28 @@ def main():
 
     # 1. Handle missing values
     listings = handle_missing_values(listings)
+    print("1", listings.shape)
+
+    # 2. Remove outliers
+    listings = remove_outliers(listings)
+    print("2", listings.shape)
 
     # 2. Encode variables
     listings = encode_variables(listings)
+    print("3", listings.shape)
+
+    # X. Remove correlated columns
+    # listings = remove_corr_cols(listings)
+
+    # Save the dataframe to disk
+    out_path = os.path.join(data_path, "cleaned_listings.csv")
+    print(out_path)
+    listings.to_csv(out_path, index=False)
+    print("4", listings.shape)
+    exit(12)
 
     # 3. Join the KMeans topics file
+    kmeans_topics = pd.read_csv(kmeans_topcs_path)
     combined_table = pd.merge(left=listings, right=kmeans_topics,
                               left_on="id", right_on="listing_id", how="right")
     if "listing_id" in combined_table.columns:
