@@ -11,8 +11,8 @@ from sklearn.preprocessing import LabelEncoder
 from Utils.DataUtils import *
 
 # modify data_path to point to the folder where listings.csv is.
-# data_path = "C:\\Users\\SSrih\\OneDrive\\UChicago\\DataMining\\project\\NYData"
-data_path = "C:\\GitHub\\listings\\data"
+data_path = "C:\\Users\\SSrih\\OneDrive\\UChicago\\DataMining\\project\\NYData"
+# data_path = "C:\\GitHub\\listings\\data"
 listings_path = os.path.join(data_path, "listings.csv")
 kmeans_topcs_path = os.path.join(data_path, "kmeans_topics.csv")
 
@@ -250,6 +250,21 @@ def handle_missing_values(listings):
                           "amenities", "description", "host_about"], axis=1, inplace=True)
 
     listings.dropna(inplace=True)
+
+    return listings
+
+
+def remove_corr_cols(listings):
+    cols_to_drop = ["host_total_listings_count",
+                    "minimum_minimum_nights", "minimum_maximum_nights", "maximum_maximum_nights",
+                    "maximum_nights_avg_ntm", "availability_60", "availability_90", "availability_365",
+                    "calculated_host_listings_count_entire_homes", "calculated_host_listings_count_private_rooms",
+                    "calculated_host_listings_count_shared_rooms", "freview_year",
+                    "maximum_minimum_nights", "minimum_nights_avg_ntm", "number_of_reviews_ltm"]
+
+    for col in cols_to_drop:
+        if col in listings.columns:
+            listings.drop(labels=col, inplace=True, axis=1)
 
     return listings
 
