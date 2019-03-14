@@ -11,7 +11,7 @@ from sklearn.preprocessing import LabelEncoder
 from Utils.DataUtils import *
 
 # modify data_path to point to the folder where listings.csv is.
-# data_path = "C:\\Users\\sriharis\\OneDrive\\UChicago\\DataMining\\project\\NYData"
+# data_path = "C:\\Users\\SSrih\\OneDrive\\UChicago\\DataMining\\project\\NYData"
 data_path = "C:\\GitHub\\listings\\data"
 listings_path = os.path.join(data_path, "listings.csv")
 kmeans_topcs_path = os.path.join(data_path, "kmeans_topics.csv")
@@ -330,11 +330,11 @@ def main():
     print("3", listings.shape)
 
     # Save the dataframe to disk
-    out_path = os.path.join(data_path, "cleaned_listings.csv")
+    out_path = os.path.join(data_path, "cleaned_listings_with_outliers.csv")
     print(out_path)
     listings.to_csv(out_path, index=False)
     print("4", listings.shape)
-    # exit(12)
+    exit(12)
 
     # 3. Join the KMeans topics file
     kmeans_topics = pd.read_csv(kmeans_topcs_path)
