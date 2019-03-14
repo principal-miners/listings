@@ -9,3 +9,4 @@ ssh/Utils/__pycache__/UtilsViz.cpython-37.pyc
 *.pyc
 data/listings.csv
 ssh/.ipynb_checkpoints
+ssh/.ipynb_checkpoints/Modeling_SMOTE_full-checkpoint.ipynb
