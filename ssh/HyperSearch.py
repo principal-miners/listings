@@ -102,16 +102,16 @@ def main():
 
     param_dist = {"n_estimators": [400],
                   "random_state": [42],
-                  "max_depth": [20, 40, 80, None],
-                  "max_features": ["sqrt", "log2", None],
-                  "min_samples_split": list(range(5, x_train.shape[1], 5)),
+                  "max_depth": [20, 40],
+                  "max_features": ["sqrt"],
+                  "min_samples_split": [35],#list(range(5, x_train.shape[1], 5)),
                   "criterion": ["mse"],
-                  "min_samples_leaf": [2, 3, 5],
-                  "learning_rate": [1, 0.5, 0.1],
-                  "subsample": [0.8, 0.7]
+                  "min_samples_leaf": [5],
+                  "learning_rate": [0.1],
+                  "subsample": [0.8]
                   }
 
-    n_iter_search = 20
+    n_iter_search = 2
     random_search = RandomizedSearchCV(gbr, param_distributions=param_dist,
                                        n_iter=n_iter_search, cv=5, n_jobs=6)
 
@@ -154,7 +154,7 @@ def main():
     #
     #
     # param_dist = {"n_estimators": [400],
-    #                 "max_depth": [20, 40, 80, None],
+    #                 "max_depth": [20, 40, None],
     #                 "max_features": ["sqrt", "log2", None],
     #                 "min_samples_split": list(range(5, x_train.shape[1], 5)),
     #                 "bootstrap": [True, False],
