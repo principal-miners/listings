@@ -28,7 +28,7 @@ It is recommended to comment out blocks of code (delineated) and observe results
 
 --------------------------------------------------------------------------------------------------------------
 
-Jupyter Notebooks
+Jupyter Notebooks (Suggested Order)
 
 1. EDA - cleaning.ipynb 
 		This notebook handles some part of missing values and explores relations between variables
