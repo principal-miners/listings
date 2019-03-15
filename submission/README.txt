@@ -3,11 +3,14 @@ DATA
 The following one drive link contains all the CSV files needed to run the data
 https://1drv.ms/f/s!AhnhpI8HTCTzgeo15mHoWVQW-OBhdQ 
 
+NOTE: please download the files into a path "../data" relative to the folder containing the notebooks
+
 --------------------------------------------------------------------------------------------------------------
+
+Files
 
 There are Notebooks and Python files in this folder.
 
---------------------------------------------------------------------------------------------------------------
 Python files
 
 1. CleaningPipeline.py
