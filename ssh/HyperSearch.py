@@ -93,7 +93,58 @@ def main():
     x_train = standard_scaler.fit_transform(x_train)
     x_test = standard_scaler.transform(x_test)
 
+    # ======================================================================================================== #
+    # GBR
+    # ======================================================================================================== #
+    # Random Search
+    gbr = GradientBoostingRegressor()
+
+
+    param_dist = {"n_estimators": [400],
+                  "random_state": [42],
+                  "max_depth": [20, 40, 80, None],
+                  "max_features": ["sqrt", "log2", None],
+                  "min_samples_split": list(range(5, x_train.shape[1], 5)),
+                  "criterion": ["mse"],
+                  "min_samples_leaf": [2, 3, 5],
+                  "learning_rate": [1, 0.5, 0.1],
+                  "subsample": [0.8, 0.7]
+                  }
+
+    n_iter_search = 20
+    random_search = RandomizedSearchCV(gbr, param_distributions=param_dist,
+                                       n_iter=n_iter_search, cv=5, n_jobs=6)
+
+    random_search.fit(x_train, y_train)
+    report(random_search.cv_results_)
+
     # -------------------------------------------------------------------------------------------------------- #
+    # Grid Search
+
+    # rfr = RandomForestRegressor()
+    #
+    # # Instantiate the GridSearchCV object and run the search
+    # parameters = {
+    #     "n_estimators": [400],
+    #     "max_depth": [80, 100],
+    #     "max_features": ["sqrt"],
+    #     "min_samples_split": [5, 8, 10],
+    #     "bootstrap": [False],
+    #     "criterion": ["mse"],
+    #     "random_state": [42]
+    # }
+    #
+    # searcher = GridSearchCV(rfr, parameters, n_jobs=6)
+    # searcher.fit(x_train, y_train)
+    #
+    # report(searcher.cv_results_)
+    #
+    # # Report the best parameters
+    # print("Best CV RF params", searcher.best_params_)
+
+    # ======================================================================================================== #
+    # Random forest
+    # ======================================================================================================== #
     # Random Search
     # rfr = RandomForestRegressor()
     #
@@ -117,26 +168,26 @@ def main():
     # -------------------------------------------------------------------------------------------------------- #
     # Grid Search
 
-    rfr = RandomForestRegressor()
-
-    # Instantiate the GridSearchCV object and run the search
-    parameters = {
-        "n_estimators": [400],
-        "max_depth": [80, 100],
-        "max_features": ["sqrt"],
-        "min_samples_split": [5, 8, 10],
-        "bootstrap": [False],
-        "criterion": ["mse"],
-        "random_state": [42]
-    }
-
-    searcher = GridSearchCV(rfr, parameters, n_jobs=6)
-    searcher.fit(x_train, y_train)
-
-    report(searcher.cv_results_)
-
-    # Report the best parameters
-    print("Best CV RF params", searcher.best_params_)
+    # rfr = RandomForestRegressor()
+    #
+    # # Instantiate the GridSearchCV object and run the search
+    # parameters = {
+    #     "n_estimators": [400],
+    #     "max_depth": [80, 100],
+    #     "max_features": ["sqrt"],
+    #     "min_samples_split": [5, 8, 10],
+    #     "bootstrap": [False],
+    #     "criterion": ["mse"],
+    #     "random_state": [42]
+    # }
+    #
+    # searcher = GridSearchCV(rfr, parameters, n_jobs=6)
+    # searcher.fit(x_train, y_train)
+    #
+    # report(searcher.cv_results_)
+    #
+    # # Report the best parameters
+    # print("Best CV RF params", searcher.best_params_)
 
 
 if __name__ ==  "__main__":
