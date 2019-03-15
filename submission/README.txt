@@ -41,7 +41,10 @@ Jupyter Notebooks
 		This notebook explores dimensionality reduction and whether it can improve the base line model
 
 7. Modeling_DecisionTrees_study.ipyb
-		This notebook explores hyperparameter tuning for some algorithms 
+		This notebook explores hyperparameter tuning for decision trees
+		
+8. Modeling_Lasso_Ridge_study.ipynb
+		This notebook explores hyperparameter tuning for lasso and ridge regressions.
 		
 8. Modeling_final_regressions.ipyb
 		This notebook runs the end to end pipeline for the final tuned models and generates relevant plots
