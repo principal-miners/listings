@@ -1,3 +1,10 @@
+DATA
+
+The following one drive link contains all the CSV files needed to run the data
+https://1drv.ms/f/s!AhnhpI8HTCTzgeo15mHoWVQW-OBhdQ 
+
+--------------------------------------------------------------------------------------------------------------
+
 There are Notebooks and Python files in this folder.
 
 --------------------------------------------------------------------------------------------------------------
@@ -46,8 +53,14 @@ Jupyter Notebooks
 8. Modeling_Lasso_Ridge_study.ipynb
 		This notebook explores hyperparameter tuning for lasso and ridge regressions.
 		
-8. Modeling_final_regressions.ipyb
+9. Modeling_final_regressions.ipyb
 		This notebook runs the end to end pipeline for the final tuned models and generates relevant plots
+		
+10. NLP_Text_vectorization.ipynb	
+		This notebook explores text vectorization on reviews data
+
+11. NLP_Modeling.ipynb
+		This notebook focuses on the review data for modeling and generating insights
 		
 --------------------------------------------------------------------------------------------------------------
 
