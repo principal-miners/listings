@@ -118,6 +118,8 @@ def main():
     random_search.fit(x_train, y_train)
     report(random_search.cv_results_)
 
+    print("Best CV RF params", random_search.best_params_)
+
     # -------------------------------------------------------------------------------------------------------- #
     # Grid Search
 
@@ -126,12 +128,14 @@ def main():
     # # Instantiate the GridSearchCV object and run the search
     # parameters = {
     #     "n_estimators": [400],
-    #     "max_depth": [80, 100],
-    #     "max_features": ["sqrt"],
-    #     "min_samples_split": [5, 8, 10],
-    #     "bootstrap": [False],
-    #     "criterion": ["mse"],
-    #     "random_state": [42]
+    #                   "random_state": [42],
+    #                   "max_depth": [20, 40, 80, None],
+    #                   "max_features": ["sqrt", "log2", None],
+    #                   "min_samples_split": list(range(5, x_train.shape[1], 5)),
+    #                   "criterion": ["mse"],
+    #                   "min_samples_leaf": [2, 3, 5],
+    #                   "learning_rate": [1, 0.5, 0.1],
+    #                   "subsample": [0.8, 0.7]
     # }
     #
     # searcher = GridSearchCV(rfr, parameters, n_jobs=6)
